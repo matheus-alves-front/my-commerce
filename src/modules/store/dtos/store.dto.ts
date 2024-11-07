@@ -7,16 +7,30 @@ export class CreateStoreDto {
 
   @IsOptional()
   description?: string;
-
-  @IsNotEmpty()
-  ownerId: string;
 }
 
-export class StoreDto implements Store {
-  name: string;
-  description: string;
-  ownerId: string;
+export class UpdateStoreDto {
+  @IsOptional()
+  name?: string;
+
+  @IsOptional()
+  description?: string;
+}
+
+export class StoreDto {
   id: string;
+  name: string;
+  description?: string;
+  ownerId: string;
   createdAt: Date;
   updatedAt: Date;
+
+  constructor(store: Store) {
+    this.id = store.id;
+    this.name = store.name;
+    this.description = store.description;
+    this.ownerId = store.ownerId;
+    this.createdAt = store.createdAt;
+    this.updatedAt = store.updatedAt;
+  }
 }

@@ -13,9 +13,26 @@ export class CustomerRepository implements ICustomerRepository {
     return this.prisma.customer.findUnique({ where: { email } });
   }
 
+  async findById(id: string): Promise<Customer | null> {
+    return this.prisma.customer.findUnique({ where: { id } });
+  }
+
+  async findAll(): Promise<Customer[]> {
+    return this.prisma.customer.findMany();
+  }
+
   async create(customerInput: Prisma.CustomerCreateInput): Promise<Customer> {
     return this.prisma.customer.create({ data: customerInput });
   }
 
-  // Implementar outros métodos
+  async update(id: string, customerInput: Prisma.CustomerUpdateInput): Promise<Customer> {
+    return this.prisma.customer.update({
+      where: { id },
+      data: customerInput,
+    });
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.customer.delete({ where: { id } });
+  }
 }

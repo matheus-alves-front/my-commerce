@@ -1,5 +1,4 @@
-// src/modules/user/dtos/user.dto.ts
-import { IsEmail, IsNotEmpty, IsEnum } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsEnum, IsOptional } from 'class-validator';
 import { UserRole, User } from '@prisma/client';
 
 export class CreateUserDto {
@@ -19,13 +18,41 @@ export class CreateUserDto {
   role: UserRole;
 }
 
-export class UserDto implements User {
+export class UpdateUserDto {
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+
+  @IsOptional()
+  password?: string;
+
+  @IsOptional()
+  firstName?: string;
+
+  @IsOptional()
+  lastName?: string;
+
+  @IsEnum(UserRole)
+  @IsOptional()
+  role?: UserRole;
+}
+
+export class UserDto {
+  id: string;
   email: string;
-  password: string;
   firstName: string;
   lastName: string;
   role: UserRole;
-  id: string;
   createdAt: Date;
   updatedAt: Date;
+
+  constructor(user: User) {
+    this.id = user.id;
+    this.email = user.email;
+    this.firstName = user.firstName;
+    this.lastName = user.lastName;
+    this.role = user.role;
+    this.createdAt = user.createdAt;
+    this.updatedAt = user.updatedAt;
+  }
 }

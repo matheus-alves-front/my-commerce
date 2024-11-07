@@ -1,11 +1,11 @@
-// src/modules/store/interfaces/store.repository.interface.ts
-
 import { Prisma, Store } from '@prisma/client';
 
 export const STORE_REPOSITORY = Symbol('IStoreRepository');
 
 export interface IStoreRepository {
-  create(storeInput: Prisma.StoreCreateInput): Promise<Store>;
+  create(data: Prisma.StoreCreateInput): Promise<Store>;
   findById(id: string): Promise<Store | null>;
-  // Outros métodos
+  findAll(): Promise<Store[]>;
+  update(id: string, data: Prisma.StoreUpdateInput): Promise<Store>;
+  delete(id: string): Promise<void>;
 }

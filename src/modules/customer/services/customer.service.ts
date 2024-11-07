@@ -1,10 +1,11 @@
 // src/modules/customer/services/customer.service.ts
 
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { ICustomerService } from '../interfaces/customer.service.interface';
-import { CUSTOMER_REPOSITORY, ICustomerRepository } from '../interfaces/customer.repository.interface';
+import { ICustomerRepository, CUSTOMER_REPOSITORY } from '../interfaces/customer.repository.interface';
 import { Customer } from '@prisma/client';
-import { CreateCustomerDto } from '../dtos/customer.dto';
+import { CreateCustomerDto, UpdateCustomerDto } from '../dtos/customer.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class CustomerService implements ICustomerService {
@@ -17,11 +18,50 @@ export class CustomerService implements ICustomerService {
     return this.customerRepository.findByEmail(email);
   }
 
-  async create(customerDto: CreateCustomerDto): Promise<Customer> {
+  async findById(id: string): Promise<Customer> {
+    const customer = await this.customerRepository.findById(id);
+    if (!customer) {
+      throw new NotFoundException('Customer not found');
+    }
+    return customer;
+  }
+
+  async findAll(): Promise<Customer[]> {
+    return this.customerRepository.findAll();
+  }
+
+  async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
+    const existingCustomer = await this.customerRepository.findByEmail(createCustomerDto.email);
+    if (existingCustomer) {
+      throw new ForbiddenException('Email already in use');
+    }
+
+    const hashedPassword = await bcrypt.hash(createCustomerDto.password, 10);
     return this.customerRepository.create({
-      ...customerDto
+      ...createCustomerDto,
+      password: hashedPassword,
     });
   }
 
-  // Implementar outros métodos
+  async update(id: string, updateCustomerDto: UpdateCustomerDto): Promise<Customer> {
+    // const customer = await this.findById(id);
+
+    if (updateCustomerDto.email) {
+      const existingCustomer = await this.customerRepository.findByEmail(updateCustomerDto.email);
+      if (existingCustomer && existingCustomer.id !== id) {
+        throw new ForbiddenException('Email already in use');
+      }
+    }
+
+    if (updateCustomerDto.password) {
+      updateCustomerDto.password = await bcrypt.hash(updateCustomerDto.password, 10);
+    }
+
+    return this.customerRepository.update(id, updateCustomerDto);
+  }
+
+  async delete(id: string): Promise<void> {
+    const customer = await this.findById(id);
+    await this.customerRepository.delete(id);
+  }
 }

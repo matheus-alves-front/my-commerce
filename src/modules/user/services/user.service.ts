@@ -1,10 +1,9 @@
-// src/modules/user/services/user.service.ts
-
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { IUserService } from '../interfaces/user.service.interface';
 import { IUserRepository, USER_REPOSITORY } from '../interfaces/user.repository.interface';
 import { User } from '@prisma/client';
-import { RegisterDto } from 'src/modules/auth/dtos/auth.dto';
+import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -17,12 +16,34 @@ export class UserService implements IUserService {
     return this.userRepository.findByEmail(email);
   }
 
-  async create(registerDto: RegisterDto): Promise<User> {
+  async findById(id: string): Promise<User> {
+    const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  async findAll(): Promise<User[]> {
+    return this.userRepository.findAll();
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     return this.userRepository.create({
-      ...registerDto,
-      role: 'ADMIN'
+      ...createUserDto,
+      password: hashedPassword,
     });
   }
 
-  // Implementar outros métodos
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    if (updateUserDto.password) {
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+    }
+    return this.userRepository.update(id, updateUserDto);
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.userRepository.delete(id);
+  }
 }
