@@ -1,11 +1,7 @@
-// src/modules/auth/controllers/auth-user.controller.ts
-
-import { Controller, Post, Body, UseGuards, Inject } from '@nestjs/common';
+import { Controller, Post, Body, Inject } from '@nestjs/common';
 import { IAuthUserService, AUTH_USER_SERVICE } from '../interfaces/auth-user.service.interface';
-import { AuthUser } from '../../../common/decorators/auth-user.decorator';
-import { User } from '@prisma/client';
-import { LocalAuthGuardUser } from '../guards/local-auth-user.guard';
 import { CreateUserDto } from 'src/modules/user/dtos/user.dto';
+import { LoginDto } from '../dtos/auth.dto';
 
 @Controller('auth/user')
 export class AuthUserController {
@@ -14,15 +10,13 @@ export class AuthUserController {
     private readonly authUserService: IAuthUserService,
   ) {}
 
-  @UseGuards(LocalAuthGuardUser)
   @Post('login')
-  async login(@AuthUser() user: User) {
-    return this.authUserService.login(user);
+  async login(@Body() body: LoginDto) {
+    return await this.authUserService.login(body);
   }
 
   @Post('register')
   async register(@Body() registerUserDto: CreateUserDto) {
-    const user = await this.authUserService.register(registerUserDto);
-    return this.authUserService.login(user);
+    return await this.authUserService.register(registerUserDto);
   }
 }

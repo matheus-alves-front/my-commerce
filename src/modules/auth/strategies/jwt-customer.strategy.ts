@@ -3,30 +3,22 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Customer } from '@prisma/client';
-import { ICustomerService, CUSTOMER_SERVICE } from '../../customer/interfaces/customer.service.interface';
-import { Inject } from '@nestjs/common';
-
 @Injectable()
 export class JwtCustomerStrategy extends PassportStrategy(Strategy, 'jwt-customer') {
-  constructor(
-    @Inject(CUSTOMER_SERVICE)
-    private readonly customerService: ICustomerService,
-  ) {
+  constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET || 'default_secret', // Utilize variável de ambiente
+      ignoreExpiration: false,
+      secretOrKey: process.env.JWT_SECRET,
     });
   }
 
-  async validate(payload: any): Promise<Customer> {
-    if (payload.type !== 'customer') {
-      return null;
-    }
-    const customer = await this.customerService.findById(payload.sub);
-    if (!customer) {
-      return null;
-    }
-    return customer;
+  async validate(payload: any) {
+    return {
+      id: payload.id,
+      firstName: payload.firstName,
+      lastname: payload.lastname,
+      ranking: payload.ranking,
+    };
   }
 }

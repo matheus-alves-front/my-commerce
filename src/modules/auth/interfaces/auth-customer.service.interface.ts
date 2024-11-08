@@ -2,11 +2,11 @@
 
 import { Customer } from '@prisma/client';
 import { CreateCustomerDto } from 'src/modules/customer/dtos/customer.dto';
+import { LoginDto } from '../dtos/auth.dto';
 
 export const AUTH_CUSTOMER_SERVICE = Symbol('IAuthCustomerService');
 
 export interface IAuthCustomerService {
-  validateCustomer(email: string, password: string): Promise<Customer | null>;
-  login(customer: Customer): Promise<{ accessToken: string }>;
-  register(registerCustomerDto: CreateCustomerDto): Promise<Customer>;
+  login(body: LoginDto): Promise<{ access_token: string }>;
+  register(registerUserDto: CreateCustomerDto): Promise<{ access_token: string }>;
 }

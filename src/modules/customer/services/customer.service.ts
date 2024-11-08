@@ -1,5 +1,3 @@
-// src/modules/customer/services/customer.service.ts
-
 import { Injectable, Inject, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { ICustomerService } from '../interfaces/customer.service.interface';
 import { ICustomerRepository, CUSTOMER_REPOSITORY } from '../interfaces/customer.repository.interface';
@@ -51,10 +49,6 @@ export class CustomerService implements ICustomerService {
       if (existingCustomer && existingCustomer.id !== id) {
         throw new ForbiddenException('Email already in use');
       }
-    }
-
-    if (updateCustomerDto.password) {
-      updateCustomerDto.password = await bcrypt.hash(updateCustomerDto.password, 10);
     }
 
     return this.customerRepository.update(id, updateCustomerDto);

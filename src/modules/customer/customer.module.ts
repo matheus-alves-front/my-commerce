@@ -6,6 +6,7 @@ import { CustomerService } from './services/customer.service';
 import { CustomerController } from './controllers/customer.controller';
 import { CUSTOMER_REPOSITORY } from './interfaces/customer.repository.interface';
 import { CUSTOMER_SERVICE } from './interfaces/customer.service.interface';
+import { CustomerProfileController } from './controllers/customer-profile.controller';
 
 @Module({
   providers: [
@@ -18,7 +19,7 @@ import { CUSTOMER_SERVICE } from './interfaces/customer.service.interface';
       useClass: CustomerService,
     },
   ],
-  controllers: [CustomerController],
+  controllers: [CustomerController, CustomerProfileController],
   exports: [CUSTOMER_SERVICE, CUSTOMER_REPOSITORY],
 })
 export class CustomerModule {}

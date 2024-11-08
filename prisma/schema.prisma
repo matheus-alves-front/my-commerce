@@ -14,6 +14,7 @@ model Store {
   owner           User             @relation(fields: [ownerId], references: [id], name: "StoreOwner")
   ownerId         String
   settings        StoreSettings?
+
   categories      Category[]
   products        Product[]
   orders          Order[]
@@ -180,14 +181,23 @@ model Product {
   updatedAt   DateTime    @updatedAt
 }
 
+model AttributeType {
+  id          String      @id @default(uuid())
+  name        String
+  type        String
+  attributes  Attribute[]
+}
+
 model Attribute {
   id        String  @id @default(uuid())
   name      String
   value     String
   product   Product @relation(fields: [productId], references: [id])
   productId String
-}
 
+  attributeTypeId String
+  attributeType AttributeType @relation(fields: [attributeTypeId], references: [id])  
+}
 
 model Review {
   id         String   @id @default(uuid())
@@ -228,27 +238,6 @@ model CartItem {
   addedAt   DateTime @default(now())
 }
 
-model OrderItem {
-  id          String  @id @default(uuid())
-  order       Order   @relation(fields: [orderId], references: [id])
-  orderId     String
-  product     Product @relation(fields: [productId], references: [id])
-  productId   String
-  productName String
-  quantity    Int
-  unitPrice   Float
-  totalPrice  Float
-}
-
-enum OrderStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELED
-  REFUNDED
-}
-
 model Order {
   id                String         @id @default(uuid())
   store             Store          @relation(fields: [storeId], references: [id])
@@ -270,6 +259,27 @@ model Order {
   payment           Payment?
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
+}
+
+model OrderItem {
+  id          String  @id @default(uuid())
+  order       Order   @relation(fields: [orderId], references: [id])
+  orderId     String
+  product     Product @relation(fields: [productId], references: [id])
+  productId   String
+  productName String
+  quantity    Int
+  unitPrice   Float
+  totalPrice  Float
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELED
+  REFUNDED
 }
 
 enum PaymentStatus {

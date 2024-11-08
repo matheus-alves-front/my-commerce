@@ -29,10 +29,8 @@ export class UserService implements IUserService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     return this.userRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
+      ...createUserDto
     });
   }
 

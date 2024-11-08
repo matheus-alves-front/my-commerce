@@ -6,6 +6,9 @@ import { UserModule } from './modules/user/user.module';
 import { StoreModule } from './modules/store/store.module';
 import { CustomerModule } from './modules/customer/customer.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CategoryModule } from './modules/category/category.module';
+import { ProductModule } from './modules/product/product.module';
+import { AttributeModule } from './modules/attribute/attribute.module';
 
 @Module({
   imports: [
@@ -14,6 +17,9 @@ import { AuthModule } from './modules/auth/auth.module';
     StoreModule,
     UserModule,
     CustomerModule,
+    CategoryModule,
+    ProductModule,
+    AttributeModule
   ],
   controllers: [AppController],
   providers: [AppService],
